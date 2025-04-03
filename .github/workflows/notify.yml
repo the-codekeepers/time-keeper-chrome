@@ -11,11 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-     - name: CodeKeepers Review Request Action
-    # You may pin to the exact commit or the version.
-    # uses: the-codekeepers/request-code-review@4c37c641fc650c48296af44cec01161ea668da10
-    uses: the-codekeepers/request-code-review@v1.2.0
-    with:
-      # API token for authenticating with the CodeKeepers endpoint
-      api_token: 
-          ${{ secrets.MY_SECRET_KEY }}
+      - name: CodeKeepers Review Request Action
+        # You may pin to the exact commit or the version.
+        # uses: the-codekeepers/request-code-review@4c37c641fc650c48296af44cec01161ea668da10
+        uses: the-codekeepers/request-code-review@v1.2.0
+        with:
+          # API token for authenticating with the CodeKeepers endpoint
+          api_token: ${{ secrets.CK_API_SECRET }}
