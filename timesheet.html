@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timesheet</title>
+    <script src="timesheet.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .table-container {
+            overflow-x: auto; /* Enable horizontal scrolling */
+            white-space: nowrap; /* Prevent wrapping */
+        }
+
+        table {
+            width: 1000px; /* Fixed table width to prevent dynamic resizing */
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+            vertical-align: top;
+            word-wrap: break-word;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .ticket-cell {
+            font-weight: bold;
+            width: 150px; /* Fixed width for ticket column */
+        }
+
+        .activity-cell {
+            width: 300px; /* Wider fixed width for activity column */
+        }
+
+        .day-cell {
+            background-color: white;
+            font-weight: bold;
+            width: 50px; /* Fixed width for day columns */
+        }
+
+        th.day-cell {
+            background-color: rgb(132, 130, 255);
+            font-weight: bold;
+            width: 50px; /* Fixed width for day columns */
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Timesheet</h1>
+    <div class="table-container">
+        <table id="timesheetTable">
+            <thead>
+                <tr id="headerRow">
+                    <th class="ticket-cell">Ticket</th>
+                    <th class="activity-cell">Activity</th>
+                    <!-- Days will be dynamically added here -->
+                </tr>
+            </thead>
+            <tbody id="timesheetBody">
+                <!-- Rows will be dynamically generated -->
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
