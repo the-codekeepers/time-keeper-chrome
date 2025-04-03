@@ -19,8 +19,6 @@ function generateDays() {
         th.classList.add("day-cell");
         headerRow.appendChild(th);
     }
-
-    generateTimesheet(logs);
 }
 
 function generateTimesheet(tickets) {
