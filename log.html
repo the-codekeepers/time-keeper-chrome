@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Your Activity</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 600px;
+            width: 500px;
+            margin: 0;
+            margin-bottom: 100px;
+            margin-top: 70px;
+            padding-top: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .inline {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        input[type="text"],
+        input[type="datetime-local"],
+        textarea {
+            box-sizing: border-box;
+            padding-right: 10px;
+        }
+
+        textarea,
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1.2em;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1em;
+            margin-top: 15px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .old-log {
+            display: flex;
+            flex-direction: row-reverse;
+            /* Newest log at the top */
+            gap: 5px;
+            max-height: 500px;
+            max-width: 500px;
+            /* Set a fixed height */
+            overflow-y: auto;
+            /* Enable scrolling */
+            margin-bottom: 20px;
+        }
+
+        .old-log::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .old-log::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .log-item {
+            background: white;
+            padding: 10px;
+            margin: 2px 0;
+            min-width: 350px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .log-item button.add {
+            background-color: #28a745;
+        }
+
+        .log-item button.add:hover {
+            background-color: #218838;
+        }
+
+        .log-item button.remove {
+            background-color: #dc3545;
+        }
+
+        .log-item button.remove:hover {
+            background-color: #c82333;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .inline input {
+            width: calc(50% - 5px);
+        }
+
+        /* This should look like a normal button*/
+        .call-to-action {
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin: 0;
+    font-size: 1.2em;
+    width: 100%;
+    text-align: center;
+    /* Fix to bottom */
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000; /* Make sure it stays on top */
+}
+
+
+    </style>
+</head>
+
+<body>
+
+    <!-- this container should be scrollable and reverse-column, it will contain up to 10 log's-->
+    <div class="container">
+        <h1>Recent Logs</h1>
+        <div class="old-log" id="previous">
+            <div class="log-item" id="logTemplate">
+                <input id="ticket" type="text" disabled>
+                <textarea id="activity" rows="4" disabled></textarea>
+                <div class="inline">
+                    <input type="text" id="duration" disabled>
+                    <input type="datetime-local" id="time" disabled>
+                    <button class="add" id="add">+</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="container">
+        <h1>Log Your Activity</h1>
+        <form id="logForm">
+            <label for="form-ticket">Ticket:</label>
+            <input type="text" id="form-ticket" list="ticketSuggestions" placeholder="Ticket (e.g., TICKET-123)">
+            <datalist id="ticketSuggestions"></datalist>
+
+            <label for="form-activity">I did:</label>
+            <textarea id="form-activity" rows="4" required></textarea>
+
+            <div class="inline">
+                <label for="form-duration">Duration:</label>
+                <label for="form-time">Time:</label>
+            </div>
+            <div class="inline">
+                <input type="text" id="form-duration" placeholder="e.g., 1h, 30m, 2d">
+                <input type="datetime-local" id="form-time" required>
+            </div>
+
+            <button type="submit">Save</button>
+        </form>
+    </div>
+
+    <a href="index.html" target="_blank" class="call-to-action">View Timesheet</a>
+
+    <script src="log.js"></script>
+</body>
+
+</html>

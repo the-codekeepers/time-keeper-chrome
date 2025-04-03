@@ -1,0 +1,15 @@
+{
+    "manifest_version": 3,
+    "name": "Hourly Logger",
+    "version": "1.0",
+    "description": "A local-only extension to log activities every hour.",
+    "permissions": ["alarms", "notifications", "storage"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+        "default_popup": "log.html",
+        "default_title": "TimeKeeper - Add Log"
+    }
+  }
+  
