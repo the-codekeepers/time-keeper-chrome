@@ -17,4 +17,4 @@ jobs:
         uses: the-codekeepers/request-code-review@v1.2.0
         with:
           # API token for authenticating with the CodeKeepers endpoint
-          api_token: ${{ secrets.MY_SECRET_KEY }}
+          api_token: ${{ secrets.CK_API_SECRET }}
