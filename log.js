@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 logs: [...logs, { activity, time, ticket, "duration": durationInMinutes }],
                 tickets: [...tickets]
             }, () => {
-                appendLog({ activity, time, ticket, "duration": durationInMinutes });
+                appendLog({ activity, time, ticket, "duration": durationInMinutes }, true);
                 logForm.reset();
             });
         });
@@ -89,7 +89,7 @@ function spawnLogs(logs) {
     });
 }
 
-function appendLog(log) {
+function appendLog(log, isNew = false) {
     console.log(logItems.length)
     const index = logItems.length;
     const template = document.getElementById("logTemplate");
@@ -112,8 +112,12 @@ function appendLog(log) {
 
     logItems.push(log);
 
-    // Append the cloned log to the container
-    previousLogsContainer.appendChild(logClone);
+    // Append the cloned log to the container //if the log is new, append it to the top
+    if (isNew) {
+        previousLogsContainer.insertBefore(logClone, previousLogsContainer.firstChild);
+    } else {
+        previousLogsContainer.appendChild(logClone);
+    }
 }
 
 //fill the log into the logForm
