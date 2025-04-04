@@ -4,7 +4,7 @@ TimeKeeper is the ultimate timesheet logger for people who have a tendency to fo
 
 This easy to use chrome extension will ask you at the start of every hour to log the work you have done over the last hour.
 
-The extension allows you to log work at any time by clicking on it's icon to reveal a popup with the log form.
+The extension allows you to log work at any time by clicking on its icon to reveal a popup with the log form.
 A handy "recent logs" widget above the form let's you quickly add time to already existing logs
 
 At the bottom of the log view you can open a timesheet in a new tab
