@@ -16,9 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
     durationInput = document.getElementById("form-duration");
     previousLogsContainer = document.getElementById("previous");
 
-    // Set default time to the last hour
+    // Set default time to the current time, down to the minute
     const now = new Date();
-    now.setMinutes(0, 0, 0);
     timeInput.value = now.toISOString().slice(0, 16);
 
     // Fetch the 10 most recent logs
@@ -91,6 +90,7 @@ function spawnLogs(logs) {
 
 function appendLog(log, isNew = false) {
     console.log(logItems.length)
+  
     const index = logItems.length;
     const template = document.getElementById("logTemplate");
     // Clone the template
@@ -105,7 +105,7 @@ function appendLog(log, isNew = false) {
     let timeFields = fields[5].childNodes;
     console.log("Time fields: ", timeFields);
     timeFields[1].value = minutesToString(log.duration);
-    timeFields[3].value = log.time
+    timeFields[3].value = log.time;
     timeFields[5].addEventListener("click", () => {
         useLog(index);
     });
@@ -120,7 +120,7 @@ function appendLog(log, isNew = false) {
     }
 }
 
-//fill the log into the logForm
+// Fill the log into the logForm
 function useLog(index) {
     console.log("Clicked ", index, logItems[index]);
 
