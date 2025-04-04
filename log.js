@@ -1,4 +1,3 @@
-// log.js
 const LOGS_TO_DISPLAY = 5; // Number of logs to display in the recent log section
 const logItems = [];
 
@@ -9,10 +8,7 @@ let ticketInput;
 let durationInput;
 let previousLogsContainer;
 
-
 document.addEventListener("DOMContentLoaded", () => {
-
-
     logForm = document.getElementById("logForm");
     activityInput = document.getElementById("form-activity");
     timeInput = document.getElementById("form-time");
@@ -20,9 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
     durationInput = document.getElementById("form-duration");
     previousLogsContainer = document.getElementById("previous");
 
-    // Set default time to the last hour
+    // Set default time to the current time, down to the minute
     const now = new Date();
-    now.setMinutes(0, 0, 0);
     timeInput.value = now.toISOString().slice(0, 16);
 
     // Fetch the 10 most recent logs
@@ -34,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
             spawnLogs(recentLogs);
         }
     });
-
 
     // When form is submitted
     logForm.addEventListener("submit", (e) => {
@@ -83,21 +77,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-
 // Function to spawn logs
 function spawnLogs(logs) {
-
     console.log("Spawning logs: ", logs);
     const template = document.getElementById("logTemplate");
     template.style.display = "none";
 
     logs.forEach((log) => {
-       appendLog(log);
+        appendLog(log);
     });
 }
 
 function appendLog(log) {
-    console.log(logItems.length)
+    console.log(logItems.length);
     const index = logItems.length;
     const template = document.getElementById("logTemplate");
     // Clone the template
@@ -112,7 +104,7 @@ function appendLog(log) {
     let timeFields = fields[5].childNodes;
     console.log("Time fields: ", timeFields);
     timeFields[1].value = minutesToString(log.duration);
-    timeFields[3].value = log.time
+    timeFields[3].value = log.time;
     timeFields[5].addEventListener("click", () => {
         useLog(index);
     });
@@ -123,7 +115,7 @@ function appendLog(log) {
     previousLogsContainer.appendChild(logClone);
 }
 
-//fill the log into the logForm
+// Fill the log into the logForm
 function useLog(index) {
     console.log("Clicked ", index, logItems[index]);
 
