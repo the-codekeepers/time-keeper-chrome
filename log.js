@@ -38,16 +38,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const ticket = ticketInput.value.trim() || "other";
         const time = timeInput.value;
         const duration = durationInput.value.trim();
-        const durationRegex = /^(\d+)([hHmMwy])$/;
-        const match = duration.match(durationRegex);
+
+        // Updated regex to match multiple unit-value pairs
+        const durationRegex = /(\d+)([hHmMwy])/g;
+        let match;
         let durationInMinutes = 0;
 
-        if (match) {
+        // Parse each unit-value pair and calculate the total duration in minutes
+        while ((match = durationRegex.exec(duration)) !== null) {
             const value = parseInt(match[1], 10);
             const unit = match[2].toLowerCase();
-            durationInMinutes = stringToMinutes(value, unit);
-        } else {
-            alert("Invalid duration format. Use '1h', '30m', etc.");
+            durationInMinutes += stringToMinutes(value, unit);
+        }
+
+        if (durationInMinutes === 0) {
+            alert("Invalid duration format. Use '1h', '30m', or combinations like '1h20m'.");
             return;
         }
 
@@ -90,7 +95,7 @@ function spawnLogs(logs) {
 
 function appendLog(log, isNew = false) {
     console.log(logItems.length)
-  
+
     const index = logItems.length;
     const template = document.getElementById("logTemplate");
     // Clone the template
