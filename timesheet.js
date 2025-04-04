@@ -52,7 +52,7 @@ function generateTimesheet(tickets) {
         const tr = document.createElement("tr");
         const td = document.createElement("td");
         td.textContent = "No logs available for this month.";
-        td.colSpan = 33; // Adjusted for ticket, activity, and total columns
+        td.colSpan = daysInMonth(selectedMonth, new Date().getFullYear()) + 3; // Adjusted for ticket, activity, and total columns
         tr.appendChild(td);
         timesheetBody.appendChild(tr);
         return;

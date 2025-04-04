@@ -41,5 +41,5 @@ function minutesToString(minutes) {
 }
 
 function minutesToHour(minutes) {
-    return (minutes / 60).toFixed(4); // Rounds to two decimal places
+    return (minutes / 60).toFixed(4); // Rounds to 4 decimal places
 }
