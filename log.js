@@ -20,15 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
     durationInput = document.getElementById("form-duration");
     previousLogsContainer = document.getElementById("previous");
 
-    const durationConversion = {
-        "h": 60,
-        "m": 1,
-        "d": 60 * 24,
-        "w": 60 * 24 * 7,
-        "M": 60 * 24 * 30,
-        "y": 60 * 24 * 365
-    };
-
     // Set default time to the last hour
     const now = new Date();
     now.setMinutes(0, 0, 0);
@@ -60,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (match) {
             const value = parseInt(match[1], 10);
             const unit = match[2].toLowerCase();
-            durationInMinutes = value * durationConversion[unit];
+            durationInMinutes = stringToMinutes(value, unit);
         } else {
             alert("Invalid duration format. Use '1h', '30m', etc.");
             return;
@@ -72,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
             tickets.add(ticket);
 
             chrome.storage.local.set({
-                logs: [...logs, { activity, time, ticket, duration }],
+                logs: [...logs, { activity, time, ticket, "duration": durationInMinutes }],
                 tickets: [...tickets]
             }, () => {
                 alert("Log saved successfully!");
@@ -120,9 +111,8 @@ function appendLog(log) {
     fields[3].value = log.activity;
     let timeFields = fields[5].childNodes;
     console.log("Time fields: ", timeFields);
-    timeFields[1].value = log.duration;
+    timeFields[1].value = minutesToString(log.duration);
     timeFields[3].value = log.time
-
     timeFields[5].addEventListener("click", () => {
         useLog(index);
     });
@@ -141,5 +131,5 @@ function useLog(index) {
 
     activityInput.value = log.activity;
     ticketInput.value = log.ticket;
-    durationInput.value = log.duration;
+    durationInput.value = minutesToString(log.duration);
 }
