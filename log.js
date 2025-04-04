@@ -1,4 +1,3 @@
-// log.js
 const LOGS_TO_DISPLAY = 5; // Number of logs to display in the recent log section
 const logItems = [];
 
@@ -9,10 +8,7 @@ let ticketInput;
 let durationInput;
 let previousLogsContainer;
 
-
 document.addEventListener("DOMContentLoaded", () => {
-
-
     logForm = document.getElementById("logForm");
     activityInput = document.getElementById("form-activity");
     timeInput = document.getElementById("form-time");
@@ -34,7 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
             spawnLogs(recentLogs);
         }
     });
-
 
     // When form is submitted
     logForm.addEventListener("submit", (e) => {
@@ -66,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 logs: [...logs, { activity, time, ticket, "duration": durationInMinutes }],
                 tickets: [...tickets]
             }, () => {
-                alert("Log saved successfully!");
+                appendLog({ activity, time, ticket, "duration": durationInMinutes });
                 logForm.reset();
             });
         });
@@ -83,16 +78,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-
 // Function to spawn logs
 function spawnLogs(logs) {
-
     console.log("Spawning logs: ", logs);
     const template = document.getElementById("logTemplate");
     template.style.display = "none";
 
     logs.forEach((log) => {
-       appendLog(log);
+        appendLog(log);
     });
 }
 
