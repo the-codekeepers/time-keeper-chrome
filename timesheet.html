@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Timesheet</title>
+    <script src="converter.js" defer></script>
     <script src="timesheet.js"></script>
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,17 +18,21 @@
         }
 
         .table-container {
-            overflow-x: auto; /* Enable horizontal scrolling */
-            white-space: nowrap; /* Prevent wrapping */
+            overflow-x: auto;
+            /* Enable horizontal scrolling */
+            white-space: nowrap;
+            /* Prevent wrapping */
         }
 
         table {
-            width: 1000px; /* Fixed table width to prevent dynamic resizing */
+            width: 1000px;
+            /* Fixed table width to prevent dynamic resizing */
             border-collapse: collapse;
             table-layout: fixed;
         }
 
-        th, td {
+        th,
+        td {
             padding: 10px;
             border: 1px solid #ccc;
             text-align: center;
@@ -41,29 +47,64 @@
 
         .ticket-cell {
             font-weight: bold;
-            width: 150px; /* Fixed width for ticket column */
+            width: 150px;
+            /* Fixed width for ticket column */
         }
 
         .activity-cell {
-            width: 300px; /* Wider fixed width for activity column */
+            width: 300px;
+            /* Wider fixed width for activity column */
+        }
+
+        .total-cell {
+            font-weight: bold;
+            width: 150px;
         }
 
         .day-cell {
             background-color: white;
             font-weight: bold;
-            width: 50px; /* Fixed width for day columns */
+            width: 50px;
+            /* Fixed width for day columns */
         }
 
         th.day-cell {
             background-color: rgb(132, 130, 255);
             font-weight: bold;
-            width: 50px; /* Fixed width for day columns */
+            width: 50px;
+            /* Fixed width for day columns */
+        }
+
+        th.weekend {
+            background-color: #a5a5a5;
+            /* Light grey for weekends */
+        }
+
+        .weekend {
+            background-color: #a5a5a5;
+            /* Light grey for weekends */
+        }
+
+        .day-name {
+            font-size: 0.8em;
+            color: #333;
+        }
+
+        .day-number {
+            font-size: 1em;
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
     <h1>Timesheet</h1>
+
+    <!-- Summarize the hours worked each day-->
+    <div class="table-container">
+
+    </div>
+
     <div class="table-container">
         <table id="timesheetTable">
             <thead>

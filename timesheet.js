@@ -2,23 +2,44 @@
 let selectedMonth = new Date().getMonth(); // Current month (1-12)
 let logs = [];
 document.addEventListener("DOMContentLoaded", () => {
-        loadLogs().then((logs) => {
-            console.log("Loaded Logs: ", logs);
-            generateDays();
-            generateTimesheet(logs);
-        });
+    loadLogs().then((logs) => {
+        console.log("Loaded Logs: ", logs);
+        generateDays();
+        generateTimesheet(logs);
     });
+});
 
 function generateDays() {
     const headerRow = document.getElementById("headerRow");
-    const days = daysInMonth(new Date().getMonth() + 1, new Date().getFullYear());
+    const days = daysInMonth(new Date().getMonth(), new Date().getFullYear());
 
     for (let day = 1; day <= days; day++) {
         const th = document.createElement("th");
-        th.textContent = day;
+
+        // Get the day of the week (0 = Sunday, 6 = Saturday)
+        const date = new Date(new Date().getFullYear(), new Date().getMonth(), day);
+        const dayOfWeek = date.toLocaleDateString("en-GB", { weekday: "short" });
+
+
         th.classList.add("day-cell");
+
+        // Weekend styling
+        if (isWeekend(date.getDay())) {
+            th.classList.add("weekend");
+        }
+
+        // Add day name and number
+        th.classList.add("day-cell", "day-header");
+        th.innerHTML = `<div class="day-name">${dayOfWeek}</div><div class="day-number">${day}</div>`;
+
         headerRow.appendChild(th);
     }
+
+    // Add the "Total" column
+    const totalTh = document.createElement("th");
+    totalTh.textContent = "Total";
+    totalTh.classList.add("total-cell");
+    headerRow.appendChild(totalTh);
 }
 
 function generateTimesheet(tickets) {
@@ -26,19 +47,44 @@ function generateTimesheet(tickets) {
     const timesheetBody = document.getElementById("timesheetBody");
     timesheetBody.innerHTML = ""; // Clear existing rows
 
+    if (Object.keys(tickets).length === 0) {
+        // Create a blank row if no tickets are present
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.textContent = "No logs available for this month.";
+        td.colSpan = 33; // Adjusted for ticket, activity, and total columns
+        tr.appendChild(td);
+        timesheetBody.appendChild(tr);
+        return;
+    }
+
     Object.keys(tickets).forEach(ticketName => {
         const activities = tickets[ticketName];
         const rowCount = activities.length;
+        let ticketTotal = 0; // Initialize ticket total time
+
+        // Sum up the total duration for the ticket
+        activities.forEach((activity) => {
+            ticketTotal += activity.duration ?? 0; // Assuming duration is in minutes
+        });
+
+        // Create the ticket cell once
+        const ticketCell = document.createElement("td");
+        ticketCell.textContent = ticketName;
+        ticketCell.classList.add("ticket-cell");
+        ticketCell.rowSpan = rowCount;
+
+        // Create the total time cell once
+        const totalTd = document.createElement("td");
+        totalTd.rowSpan = rowCount;
+        totalTd.textContent = `${minutesToHour(ticketTotal)}h`;
+        totalTd.classList.add("total-cell");
 
         activities.forEach((activity, index) => {
             const tr = document.createElement("tr");
 
-            // Create the ticket cell only once per group
+            // Append the ticket cell only to the first row
             if (index === 0) {
-                const ticketCell = document.createElement("td");
-                ticketCell.textContent = ticketName;
-                ticketCell.classList.add("ticket-cell");
-                ticketCell.rowSpan = rowCount;
                 tr.appendChild(ticketCell);
             }
 
@@ -49,29 +95,45 @@ function generateTimesheet(tickets) {
             tr.appendChild(activityCell);
 
             // Generate day cells (1 to 31)
-            for (let day = 1; day <= 31; day++) {
+            for (let day = 1; day <= daysInMonth(selectedMonth, new Date().getFullYear()); day++) {
                 const td = document.createElement("td");
                 const logDate = new Date(activity.time);
                 const logDay = logDate.getDate();
 
+                // Log the time spent on the activity for the day
                 if (logDay === day) {
-                    td.textContent = activity.duration;
+                    td.textContent = `${minutesToHour(activity.duration)}h`;
                 } else {
                     td.textContent = "";
                 }
-                
+
+                // Check if the day is a weekend
+                let thisDate = new Date(new Date().getFullYear(), selectedMonth, day);
+                if (isWeekend(thisDate.getDay())) {
+                    td.classList.add("weekend");
+                }
+
                 td.classList.add("day-cell");
                 tr.appendChild(td);
             }
 
+            // Append the total cell only to the first row
+            if (index === 0) {
+                tr.appendChild(totalTd);
+            }
+
+            // Append the entire row to the table body
             timesheetBody.appendChild(tr);
         });
+
+        console.log("Ticket Total: ", ticketTotal);
     });
 }
 
 
+
 function daysInMonth(month, year) {
-    return new Date(year, month, 0).getDate();
+    return new Date(year, month + 1, 0).getDate();
 }
 
 function loadLogs() {
@@ -102,10 +164,14 @@ function loadLogs() {
 
                     if (existingEntry) {
                         // Add up the duration if it's the same activity on the same day
-                        const existingDuration = parseInt(existingEntry.duration.replace(/\D/g, "")) || 0;
-                        const newDuration = parseInt(log.duration.replace(/\D/g, "")) || 0;
-                        const totalDuration = existingDuration + newDuration;
-                        existingEntry.duration = `${totalDuration}h`; // Update the duration (assuming hours for simplicity)
+                        const existingDuration = existingEntry.duration || 0;
+                        const newDuration = log.duration || 0;
+                        const totalDuration = existingDuration + newDuration; //duration in minutes
+
+                        existingEntry.duration = totalDuration; // Update the duration in minutes
+
+                        console.log("existingDuration: ", existingEntry.duration, "newDuration: ", newDuration, "totalDuration: ", totalDuration);
+
                     } else {
                         // If not, push the new log entry
                         acc[ticket].push(log);
@@ -121,5 +187,7 @@ function loadLogs() {
 }
 
 
-
+function isWeekend(day) {
+    return day === 0 || day === 6; // 0 = Sunday, 6 = Saturday
+}
 
