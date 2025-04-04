@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 logs: [...logs, { activity, time, ticket, "duration": durationInMinutes }],
                 tickets: [...tickets]
             }, () => {
-                alert("Log saved successfully!");
+                appendLog({ activity, time, ticket, "duration": durationInMinutes });
                 logForm.reset();
             });
         });
