@@ -90,7 +90,7 @@ function generateTimesheet(tickets) {
 
             // Create the activity cell
             const activityCell = document.createElement("td");
-            activityCell.textContent = activity.activity;
+            activityCell.innerHTML = activity.activity.replace(/\n/g, "<br>"); // Replace newlines with <br> tags for HTML display
             activityCell.classList.add("activity-cell");
             tr.appendChild(activityCell);
 
