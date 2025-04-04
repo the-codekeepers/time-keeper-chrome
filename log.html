@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log Your Activity</title>
-    
+
     <script src="converter.js" defer></script>
     <script src="log.js"></script>
 
@@ -138,27 +138,55 @@
             width: calc(50% - 5px);
         }
 
+        /* Override the generic .inline input width for log items */
+        .old-log .log-item .inline input {
+            width: calc(33% - 10px);
+            /* Allow flex to control the width */
+        }
+
+        /* Make the duration input longer */
+        .old-log .log-item .inline input#duration {
+            width: calc(33% - 15px);
+            /* Adjust as needed; higher value means more space */
+        }
+
+        /* Optionally, set the datetime input to a smaller flex value */
+        .old-log .log-item .inline input[type="datetime-local"] {
+            flex: 2;
+        }
+
+        /* Make the add button narrower */
+        .old-log .log-item .inline button.add {
+            width: 80px;
+            height: 3rem;
+            margin-top: 5px;
+            font-size: 3em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
         /* This should look like a normal button*/
         .call-to-action {
-    display: inline-block;
-    background-color: #007bff;
-    color: white;
-    padding: 10px 20px;
-    text-decoration: none;
-    border-radius: 5px;
-    margin: 0;
-    font-size: 1.2em;
-    width: 100%;
-    text-align: center;
-    /* Fix to bottom */
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000; /* Make sure it stays on top */
-}
-
-
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 0;
+            font-size: 1.2em;
+            width: 100%;
+            text-align: center;
+            /* Fix to bottom */
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            /* Make sure it stays on top */
+        }
     </style>
 </head>
 
