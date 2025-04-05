@@ -35,7 +35,7 @@ function sendNotification() {
 // Handle notification button clicks
 chrome.notifications.onButtonClicked.addListener((notificationId) => {
     if (notificationId) {
-        chrome.tabs.create({ url: "log.html" }); // Open log page
+        chrome.tabs.create({ url: "log-form.html" }); // Open log page
     }
 });
 
