@@ -1,9 +1,7 @@
-
 let selectedMonth = new Date().getMonth(); // Current month (1-12)
 let logs = [];
 document.addEventListener("DOMContentLoaded", () => {
     loadLogs().then((logs) => {
-        console.log("Loaded Logs: ", logs);
         generateDays();
         generateTimesheet(logs);
     });
@@ -11,126 +9,194 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function generateDays() {
     const headerRow = document.getElementById("headerRow");
-    const days = daysInMonth(new Date().getMonth(), new Date().getFullYear());
+    const summaryRow = document.getElementById("summaryRow");
+    const currentDate = new Date();
+    const month = currentDate.getMonth();
+    const year = currentDate.getFullYear();
+    const days = daysInMonth(month, year);
 
     for (let day = 1; day <= days; day++) {
-        const th = document.createElement("th");
-
-        // Get the day of the week (0 = Sunday, 6 = Saturday)
-        const date = new Date(new Date().getFullYear(), new Date().getMonth(), day);
+        const date = new Date(year, month, day);
         const dayOfWeek = date.toLocaleDateString("en-GB", { weekday: "short" });
 
-
-        th.classList.add("day-cell");
-
-        // Weekend styling
+        // Create header cell for the day
+        const dayTh = document.createElement("th");
+        dayTh.classList.add("day-cell", "day-header");
         if (isWeekend(date.getDay())) {
-            th.classList.add("weekend");
+            dayTh.classList.add("weekend");
         }
+        dayTh.innerHTML = `<div class="day-name">${dayOfWeek}</div><div class="day-number">${day}</div>`;
+        headerRow.appendChild(dayTh);
 
-        // Add day name and number
-        th.classList.add("day-cell", "day-header");
-        th.innerHTML = `<div class="day-name">${dayOfWeek}</div><div class="day-number">${day}</div>`;
-
-        headerRow.appendChild(th);
+        // Create corresponding summary cell above for this day
+        const summaryCell = document.createElement("td");
+        if(isWeekend(date.getDay())) {
+            summaryCell.classList.add("weekend");
+        }
+        // Format the date as YYYY-MM-DD for the ID;
+        summaryCell.id = `summary_${day}`;
+        summaryCell.textContent = ""; // Set a default value or leave blank
+        summaryRow.appendChild(summaryCell);
     }
 
-    // Add the "Total" column
-    const totalTh = document.createElement("th");
-    totalTh.textContent = "Total";
-    totalTh.classList.add("total-cell");
-    headerRow.appendChild(totalTh);
+    // Add the "Total" column to the header row
+    const totalThHeader = document.createElement("th");
+    totalThHeader.textContent = "Total";
+    totalThHeader.classList.add("total-cell");
+    headerRow.appendChild(totalThHeader);
+
+    // Add the "Total" column to the summary row
+    const totalThSummary = document.createElement("td");
+    totalThSummary.textContent = "0h"; // Default total summary value
+    totalThSummary.classList.add("total-cell");
+    summaryRow.appendChild(totalThSummary);
 }
 
 function generateTimesheet(tickets) {
-    console.log("Generating timesheet with tickets: ", tickets);
     const timesheetBody = document.getElementById("timesheetBody");
     timesheetBody.innerHTML = ""; // Clear existing rows
+    const summaryRow = document.getElementById("summaryRow");
+
+    // Initialize an object to store total time logged for each day
+    const dailyTotals = {};
 
     if (Object.keys(tickets).length === 0) {
-        // Create a blank row if no tickets are present
-        const tr = document.createElement("tr");
-        const td = document.createElement("td");
-        td.textContent = "No logs available for this month.";
-        td.colSpan = daysInMonth(selectedMonth, new Date().getFullYear()) + 3; // Adjusted for ticket, activity, and total columns
-        tr.appendChild(td);
-        timesheetBody.appendChild(tr);
+        createEmptyRow(timesheetBody);
         return;
     }
 
     Object.keys(tickets).forEach(ticketName => {
-        const activities = tickets[ticketName];
-        const rowCount = activities.length;
-        let ticketTotal = 0; // Initialize ticket total time
+        processTicket(ticketName, tickets[ticketName], dailyTotals, timesheetBody);
+    });
 
-        // Sum up the total duration for the ticket
-        activities.forEach((activity) => {
-            ticketTotal += activity.duration ?? 0; // Assuming duration is in minutes
-        });
+    updateSummaryRow(dailyTotals);
+}
 
-        // Create the ticket cell once
-        const ticketCell = document.createElement("td");
-        ticketCell.textContent = ticketName;
-        ticketCell.classList.add("ticket-cell");
-        ticketCell.rowSpan = rowCount;
+// Create an empty row when no tickets are available
+function createEmptyRow(timesheetBody) {
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.textContent = "No logs available for this month.";
+    td.colSpan = daysInMonth(selectedMonth, new Date().getFullYear()) + 3; // Adjusted for ticket, activity, and total columns
+    tr.appendChild(td);
+    timesheetBody.appendChild(tr);
+}
 
-        // Create the total time cell once
-        const totalTd = document.createElement("td");
-        totalTd.rowSpan = rowCount;
-        totalTd.textContent = `${minutesToHour(ticketTotal)}h`;
-        totalTd.classList.add("total-cell");
+// Process a single ticket and its activities
+function processTicket(ticketName, activities, dailyTotals, timesheetBody) {
+    const rowCount = activities.length;
+    let ticketTotal = 0;
 
-        activities.forEach((activity, index) => {
-            const tr = document.createElement("tr");
+    // Sum up the total duration for the ticket and update daily totals
+    activities.forEach(activity => {
+        ticketTotal += activity.duration ?? 0;
+        updateDailyTotals(activity, dailyTotals);
+    });
 
-            // Append the ticket cell only to the first row
-            if (index === 0) {
-                tr.appendChild(ticketCell);
-            }
+    // Create ticket and total cells
+    const ticketCell = createTicketCell(ticketName, rowCount);
+    const totalTd = createTotalCell(ticketTotal, rowCount);
 
-            // Create the activity cell
-            const activityCell = document.createElement("td");
-            activityCell.innerHTML = activity.activity.replace(/\n/g, "<br>"); // Replace newlines with <br> tags for HTML display
-            activityCell.classList.add("activity-cell");
-            tr.appendChild(activityCell);
+    // Generate rows for activities
+    activities.forEach((activity, index) => {
+        const tr = document.createElement("tr");
 
-            // Generate day cells (1 to 31)
-            for (let day = 1; day <= daysInMonth(selectedMonth, new Date().getFullYear()); day++) {
-                const td = document.createElement("td");
-                const logDate = new Date(activity.time);
-                const logDay = logDate.getDate();
+        // Append the ticket cell only to the first row
+        if (index === 0) {
+            tr.appendChild(ticketCell);
+        }
 
-                // Log the time spent on the activity for the day
-                if (logDay === day) {
-                    td.textContent = `${minutesToHour(activity.duration)}h`;
-                } else {
-                    td.textContent = "";
-                }
+        // Append the activity cell
+        const activityCell = createActivityCell(activity);
+        tr.appendChild(activityCell);
 
-                // Check if the day is a weekend
-                let thisDate = new Date(new Date().getFullYear(), selectedMonth, day);
-                if (isWeekend(thisDate.getDay())) {
-                    td.classList.add("weekend");
-                }
+        // Append day cells
+        appendDayCells(activity, tr);
 
-                td.classList.add("day-cell");
-                tr.appendChild(td);
-            }
+        // Append the total cell only to the first row
+        if (index === 0) {
+            tr.appendChild(totalTd);
+        }
 
-            // Append the total cell only to the first row
-            if (index === 0) {
-                tr.appendChild(totalTd);
-            }
-
-            // Append the entire row to the table body
-            timesheetBody.appendChild(tr);
-        });
-
-        console.log("Ticket Total: ", ticketTotal);
+        // Append the row to the table body
+        timesheetBody.appendChild(tr);
     });
 }
 
+// Update daily totals for a specific activity
+function updateDailyTotals(activity, dailyTotals) {
+    const logDate = new Date(activity.time);
+    const logDay = logDate.getDate();
 
+    if (!dailyTotals[logDay]) {
+        dailyTotals[logDay] = 0;
+    }
+    dailyTotals[logDay] += activity.duration ?? 0;
+}
+
+// Create the ticket cell
+function createTicketCell(ticketName, rowCount) {
+    const ticketCell = document.createElement("td");
+    ticketCell.textContent = ticketName;
+    ticketCell.classList.add("ticket-cell");
+    ticketCell.rowSpan = rowCount;
+    return ticketCell;
+}
+
+// Create the total time cell
+function createTotalCell(ticketTotal, rowCount) {
+    const totalTd = document.createElement("td");
+    totalTd.rowSpan = rowCount;
+    totalTd.textContent = `${minutesToHour(ticketTotal)}h`;
+    totalTd.classList.add("total-cell");
+    return totalTd;
+}
+
+// Create the activity cell
+function createActivityCell(activity) {
+    const activityCell = document.createElement("td");
+    activityCell.innerHTML = activity.activity.replace(/\n/g, "<br>"); // Replace newlines with <br> tags for HTML display
+    activityCell.classList.add("activity-cell");
+    return activityCell;
+}
+
+// Append day cells for an activity
+function appendDayCells(activity, tr) {
+    for (let day = 1; day <= daysInMonth(selectedMonth, new Date().getFullYear()); day++) {
+        const td = document.createElement("td");
+        const logDate = new Date(activity.time);
+        const logDay = logDate.getDate();
+
+        // Log the time spent on the activity for the day
+        if (logDay === day) {
+            td.textContent = `${minutesToHour(activity.duration)}h`;
+        } else {
+            td.textContent = "";
+        }
+
+        // Check if the day is a weekend
+        const thisDate = new Date(new Date().getFullYear(), selectedMonth, day);
+        if (isWeekend(thisDate.getDay())) {
+            td.classList.add("weekend");
+        }
+
+        td.classList.add("day-cell");
+        tr.appendChild(td);
+    }
+}
+
+// Update the summary row with daily totals
+function updateSummaryRow(dailyTotals) {
+    Object.keys(dailyTotals).forEach(day => {
+        const summaryCell = document.getElementById(`summary_${day}`);
+        if (summaryCell) {
+            if(isWeekend(new Date(new Date().getFullYear(), selectedMonth, day).getDay())) {
+                summaryCell.classList.add("weekend");
+            }
+            summaryCell.textContent = `${minutesToHour(dailyTotals[day])}h`;
+        }
+    });
+}
 
 function daysInMonth(month, year) {
     return new Date(year, month + 1, 0).getDate();
@@ -169,23 +235,17 @@ function loadLogs() {
                         const totalDuration = existingDuration + newDuration; //duration in minutes
 
                         existingEntry.duration = totalDuration; // Update the duration in minutes
-
-                        console.log("existingDuration: ", existingEntry.duration, "newDuration: ", newDuration, "totalDuration: ", totalDuration);
-
                     } else {
                         // If not, push the new log entry
                         acc[ticket].push(log);
                     }
-
                     return acc;
                 }, {});
 
-            console.log("Sorted Logs: ", logs);
             resolve(logs);
         });
     });
 }
-
 
 function isWeekend(day) {
     return day === 0 || day === 6; // 0 = Sunday, 6 = Saturday

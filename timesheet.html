@@ -7,7 +7,7 @@
     <title>Timesheet</title>
     <script src="converter.js" defer></script>
     <script src="timesheet.js"></script>
-    
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -25,7 +25,6 @@
         }
 
         table {
-            width: 1000px;
             /* Fixed table width to prevent dynamic resizing */
             border-collapse: collapse;
             table-layout: fixed;
@@ -33,6 +32,7 @@
 
         th,
         td {
+            background-color: white;
             padding: 10px;
             border: 1px solid #ccc;
             text-align: center;
@@ -95,6 +95,11 @@
             font-size: 1em;
             font-weight: bold;
         }
+
+        .empty {
+            background-color: transparent;
+            border: none;
+        }
     </style>
 </head>
 
@@ -109,6 +114,11 @@
     <div class="table-container">
         <table id="timesheetTable">
             <thead>
+                <tr id="summaryRow">
+                    <th class="ticket-cell empty"></th>
+                    <th class="activity-cell">Total</th>
+                </tr>
+                <!-- Days will be dynamically added here -->
                 <tr id="headerRow">
                     <th class="ticket-cell">Ticket</th>
                     <th class="activity-cell">Activity</th>
