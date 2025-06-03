@@ -103,10 +103,23 @@ function appendLog(log, isNew = false) {
     let timeFields = fields[5].childNodes;
     timeFields[1].value = minutesToString(log.duration);
 
-    // Convert UTC time to local time for display in input[type="datetime-local"] format (YYYY-MM-DDTHH:mm)
+    // Correct conversion: display local time from stored UTC string
+    // For input[type="datetime-local"]: must be local time in 'YYYY-MM-DDTHH:mm' format
     const utcDate = new Date(log.time);
-    const localDate = new Date(utcDate.getTime() - utcDate.getTimezoneOffset() * 60000);
-    const localDateString = localDate.toISOString().slice(0, 16); // 'YYYY-MM-DDTHH:mm'
+    // No offset needed: toISOString() gives UTC, but input expects local, so use local values
+    const year = utcDate.getFullYear();
+    const month = String(utcDate.getMonth() + 1).padStart(2, '0');
+    const day = String(utcDate.getDate()).padStart(2, '0');
+    const hour = String(utcDate.getHours()).padStart(2, '0');
+    const minute = String(utcDate.getMinutes()).padStart(2, '0');
+    // But these are in local time if you use get* methods, so use them directly
+    const localDate = new Date(log.time);
+    const localYear = localDate.getFullYear();
+    const localMonth = String(localDate.getMonth() + 1).padStart(2, '0');
+    const localDay = String(localDate.getDate()).padStart(2, '0');
+    const localHour = String(localDate.getHours()).padStart(2, '0');
+    const localMinute = String(localDate.getMinutes()).padStart(2, '0');
+    const localDateString = `${localYear}-${localMonth}-${localDay}T${localHour}:${localMinute}`;
     timeFields[3].value = localDateString;
 
     timeFields[5].addEventListener("click", () => {
