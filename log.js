@@ -37,9 +37,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const activity = activityInput.value.trim();
         const ticket = ticketInput.value.trim() || "other";
 
-        // Convert local time to UTC
-        const localTime = new Date(timeInput.value);
-        const utcTime = new Date(localTime.getTime() - localTime.getTimezoneOffset() * 60000).toISOString();
+        // Convert local time to UTC correctly
+        const utcTime = new Date(timeInput.value).toISOString();
 
         const duration = durationInput.value.trim();
 
