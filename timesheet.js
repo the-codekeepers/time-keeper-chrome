@@ -1,4 +1,3 @@
-
 let selectedMonth = new Date().getMonth(); // Current month (1-12)
 let logs = [];
 document.addEventListener("DOMContentLoaded", () => {
@@ -97,11 +96,19 @@ function generateTimesheet(tickets) {
             // Generate day cells (1 to 31)
             for (let day = 1; day <= daysInMonth(selectedMonth, new Date().getFullYear()); day++) {
                 const td = document.createElement("td");
+                // Convert UTC time to local time for display
                 const logDate = new Date(activity.time);
-                const logDay = logDate.getDate();
+                const logDay = logDate.getDate(); // Local day
+                const logMonth = logDate.getMonth(); // Local month
+                const logYear = logDate.getFullYear(); // Local year
+                const currentYear = new Date().getFullYear();
 
-                // Log the time spent on the activity for the day
-                if (logDay === day) {
+                // Only show if the log is for this day, month, and year
+                if (
+                    logDay === day &&
+                    logMonth === selectedMonth &&
+                    logYear === currentYear
+                ) {
                     td.textContent = `${minutesToHour(activity.duration)}h`;
                 } else {
                     td.textContent = "";
@@ -144,22 +151,26 @@ function loadLogs() {
         chrome.storage.local.get({ logs: [] }, (data) => {
             const logs = data.logs
                 .filter((log) => {
-                    const logDate = new Date(log.time).getMonth();
-                    return logDate === selectedMonth;
+                    // Convert UTC time to local time for filtering
+                    const logDate = new Date(log.time);
+                    const localMonth = logDate.getMonth(); // This is local month
+                    return localMonth === selectedMonth;
                 })
                 .reduce((acc, log) => {
                     const ticket = log.ticket || "other";
                     const activity = log.activity || "unknown";
-                    const logDate = new Date(log.time).toLocaleDateString();
+                    // Convert UTC time to local date string for grouping
+                    const logDate = new Date(log.time);
+                    const localDateString = logDate.toLocaleDateString();
 
                     // Initialize if ticket doesn't exist
                     if (!acc[ticket]) {
                         acc[ticket] = [];
                     }
 
-                    // Check if the same activity on the same day already exists
+                    // Check if the same activity on the same local day already exists
                     const existingEntry = acc[ticket].find(
-                        (entry) => entry.activity === activity && new Date(entry.time).toLocaleDateString() === logDate
+                        (entry) => entry.activity === activity && new Date(entry.time).toLocaleDateString() === localDateString
                     );
 
                     if (existingEntry) {
