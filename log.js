@@ -103,18 +103,11 @@ function appendLog(log, isNew = false) {
     let timeFields = fields[5].childNodes;
     timeFields[1].value = minutesToString(log.duration);
 
-    // Convert UTC time to local time for display
-    const localTime = new Date(log.time).toLocaleString("sv-SE", {
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        hour12: false,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit"
-    });
-
-    timeFields[3].value = localTime;
+    // Convert UTC time to local time for display in input[type="datetime-local"] format (YYYY-MM-DDTHH:mm)
+    const utcDate = new Date(log.time);
+    const localDate = new Date(utcDate.getTime() - utcDate.getTimezoneOffset() * 60000);
+    const localDateString = localDate.toISOString().slice(0, 16); // 'YYYY-MM-DDTHH:mm'
+    timeFields[3].value = localDateString;
 
     timeFields[5].addEventListener("click", () => {
         useLog(index);
